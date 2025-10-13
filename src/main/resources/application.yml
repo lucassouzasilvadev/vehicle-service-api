@@ -1,0 +1,26 @@
+server:
+  port: 8081  # porta do seu veiculos-service
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/veiculos_db
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # cria/atualiza tabelas automaticamente (ótimo para dev)
+    show-sql: true        # exibe as queries no console
+    properties:
+      hibernate:
+        format_sql: true  # formata as queries para melhor leitura
+
+  sql:
+    init:
+      mode: always        # executa scripts schema.sql/data.sql se existirem
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
