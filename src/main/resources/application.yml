@@ -3,21 +3,23 @@ server:
 
 
 spring:
-  profiles:
-    active: test
   datasource:
-    url: jdbc:postgresql://localhost:5432/veiculos_db
-    username: postgres
-    password: admin
-    driver-class-name: org.postgresql.Driver
-
+    url: jdbc:postgresql://${RDS_ENDPOINT:your-rds-endpoint}:5432/${RDS_DB:auto_sale}
+    username: ${RDS_USERNAME:postgres}
+    password: ${RDS_PASSWORD:postgres}
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  sql:
-    init:
-      mode: always
+      ddl-auto: update   # em prod considere 'validate' + migrações (Flyway)
+    show-sql: false
+
+server:
+  port: ${PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# Dica: use AWS Secrets Manager p/ injetar as env vars acima
+
