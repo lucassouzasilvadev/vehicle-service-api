@@ -1,7 +1,10 @@
 server:
   port: 8081
 
+
 spring:
+  profiles:
+    active: test
   datasource:
     url: jdbc:postgresql://localhost:5432/veiculos_db
     username: postgres

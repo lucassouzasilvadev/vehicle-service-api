@@ -1,10 +1,10 @@
 package com.vehicle.service_api.application.service;
 
-import com.vehicle.service_api.application.port.input.VehicleUseCase;
-import com.vehicle.service_api.application.port.output.VehicleRepositoryPort;
-import com.vehicle.service_api.domain.exception.BusinessException;
 import com.vehicle.service_api.domain.model.Vehicle;
-import com.vehicle.service_api.domain.model.VehicleStatus;
+import com.vehicle.service_api.domain.model.enums.VehicleStatus;
+import com.vehicle.service_api.domain.ports.input.VehicleUseCase;
+import com.vehicle.service_api.domain.ports.output.VehicleRepositoryPort;
+import com.vehicle.service_api.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,42 +13,32 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class VehicleService implements VehicleUseCase {
-
-    private final VehicleRepositoryPort vehicleRepository;
+    private final VehicleRepositoryPort repo;
 
     @Override
-    public Vehicle create(Vehicle vehicle) {
-        vehicle.updateStatus(VehicleStatus.AVAILABLE);
-        return vehicleRepository.save(vehicle);
+    public Vehicle create(Vehicle v) {
+        if (v.getStatus() == null) v.setStatus(VehicleStatus.AVAILABLE);
+        return repo.save(v);
     }
 
     @Override
-    public Vehicle update(Long id, Vehicle vehicle) {
-        Vehicle findVehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Vehicle not found"));
-        findVehicle.setBrand(vehicle.getBrand());
-        findVehicle.setModel(vehicle.getModel());
-        findVehicle.setYear(vehicle.getYear());
-        findVehicle.setPrice(vehicle.getPrice());
-        findVehicle.setColor(vehicle.getColor());
-        return vehicleRepository.save(findVehicle);
+    public Vehicle findById(Long id) {
+        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Vehicle not found: " + id));
     }
 
     @Override
-    public List<Vehicle> findAvailable() {
-        return vehicleRepository.findByStatus(VehicleStatus.AVAILABLE);
+    public List<Vehicle> findAll() { return repo.findAll(); }
+
+    @Override
+    public Vehicle update(Long id, Vehicle v) {
+        Vehicle ex = findById(id); ex.updateFrom(v); return repo.save(ex);
     }
 
     @Override
-    public List<Vehicle> findSold() {
-        return vehicleRepository.findByStatus(VehicleStatus.SOLD);
-    }
+    public void delete(Long id) { repo.deleteById(id); }
 
     @Override
-    public Vehicle updateVehicleStatus(Long id, String newStatus) {
-        Vehicle findVehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Vehicle not found"));
-        findVehicle.updateStatus(VehicleStatus.valueOf(newStatus));
-        return vehicleRepository.save(findVehicle);
+    public Vehicle updateStatus(Long id, VehicleStatus status) {
+        Vehicle ex = findById(id); ex.setStatus(status); return repo.save(ex);
     }
 }

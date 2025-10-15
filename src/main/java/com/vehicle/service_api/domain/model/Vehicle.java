@@ -1,25 +1,30 @@
 package com.vehicle.service_api.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.vehicle.service_api.domain.model.enums.VehicleStatus;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Vehicle {
+    private Long id;
     private String brand;
     private String model;
     private int year;
     private String color;
     private BigDecimal price;
-    private VehicleStatus vehicleStatus;
+    private VehicleStatus status;
 
-    public void updateStatus(VehicleStatus newVehicleStatus){
-        this.vehicleStatus = newVehicleStatus;
+    public void updateFrom(Vehicle v) {
+        this.brand = v.brand;
+        this.model = v.model;
+        this.year = v.year;
+        this.color = v.color;
+        this.price = v.price;
+        this.status = v.status;
     }
 }
